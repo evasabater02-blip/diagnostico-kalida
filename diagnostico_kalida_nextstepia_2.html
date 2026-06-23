@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico IA · Fundació Kālida · NextStepIA</title>
+<style>
+  :root { --navy:#1E2761; --blue:#4A90C4; --blue-light:#e8f2fb; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;min-height:100vh;padding:2rem 1rem;}
+  .fw{max-width:660px;margin:0 auto;padding-bottom:3rem;}
+  .fh{background:var(--navy);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.25rem;}
+  .fh img{height:38px;background:white;border-radius:6px;padding:6px 12px;flex-shrink:0;object-fit:contain;}
+  .fh-text h1{color:white;font-size:16px;font-weight:600;line-height:1.3;margin-bottom:3px;}
+  .fh-text p{color:rgba(255,255,255,0.72);font-size:12px;line-height:1.5;}
+  .anon{background:var(--blue-light);border:1px solid #b5d4f4;border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:1.25rem;}
+  .anon svg{flex-shrink:0;margin-top:1px;color:var(--blue);}
+  .anon p{font-size:12px;color:#444;line-height:1.5;}
+  .pb{height:4px;background:#dde1e8;border-radius:2px;margin-bottom:1.25rem;overflow:hidden;}
+  .pf{height:100%;background:var(--blue);border-radius:2px;width:0%;transition:width 0.35s;}
+  .blk{background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:1.5rem;margin-bottom:1rem;}
+  .blk-lbl{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+  .blk h2{font-size:16px;font-weight:600;color:#1a1a2e;margin-bottom:1.25rem;}
+  .qg{margin-bottom:1.25rem;}
+  .qg:last-child{margin-bottom:0;}
+  .ql{font-size:14px;font-weight:600;display:block;margin-bottom:7px;line-height:1.4;color:#1a1a2e;}
+  .qh{font-size:12px;color:#666;display:block;margin-bottom:7px;}
+  .og{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:6px;}
+  .og2{grid-template-columns:repeat(2,1fr);}
+  .og4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:480px){.og2,.og4{grid-template-columns:repeat(2,1fr)!important;}}
+  .opt{border:1px solid #dde1e8;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:13px;color:#333;background:#fff;text-align:left;display:flex;align-items:flex-start;gap:7px;line-height:1.35;font-family:inherit;transition:border-color .12s,background .12s;}
+  .opt:hover{border-color:var(--blue);background:var(--blue-light);}
+  .opt.sel{border-color:var(--navy);background:var(--blue-light);color:var(--navy);font-weight:600;}
+  .ck{width:16px;height:16px;border:1.5px solid #aaa;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+  .opt.sel .ck{background:var(--navy);border-color:var(--navy);}
+  .opt.sel .ck::after{content:'';width:6px;height:6px;background:white;border-radius:50%;display:block;}
+  .cksq{width:16px;height:16px;border:1.5px solid #aaa;border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+  .opt.sel .cksq{background:var(--navy);border-color:var(--navy);}
+  .opt.sel .cksq::after{content:'✓';color:white;font-size:10px;font-weight:700;line-height:1;}
+  textarea,input[type=text]{width:100%;border:1px solid #dde1e8;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:#333;background:#fff;resize:vertical;outline:none;transition:border-color .12s;}
+  textarea:focus,input[type=text]:focus{border-color:var(--blue);}
+  textarea{min-height:80px;}
+  .dvd{height:1px;background:#eaecf0;margin:1.25rem 0;}
+  .dept-note{display:none;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#555;margin-top:8px;line-height:1.5;}
+  .dept-note.show{display:block;}
+  .tareas-section{display:none;}
+  .tareas-section.show{display:block;}
+  .ts-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;padding:6px 10px;background:var(--blue-light);border-radius:8px;}
+  .sbtn{width:100%;background:var(--navy);color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;transition:opacity .15s;}
+  .sbtn:hover{opacity:.88;}
+  .sbtn:disabled{opacity:.4;cursor:default;}
+  .req{color:var(--blue);margin-left:2px;}
+  .succ{display:none;text-align:center;padding:3rem 1.5rem;background:#fff;border-radius:12px;}
+  .ic-circle{width:64px;height:64px;background:var(--blue-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+  .ic-circle svg{width:32px;height:32px;color:var(--navy);}
+  .succ h2{font-size:20px;font-weight:600;margin-bottom:8px;color:#1a1a2e;}
+  .succ p{font-size:14px;color:#666;line-height:1.6;}
+  .footer-note{text-align:center;font-size:12px;color:#999;margin-top:9px;}
+</style>
+</head>
+<body>
+<div class="fw">
+
+  <div class="fh">
+    <img src="data:image/png;base64,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" alt="NextStepIA">
+    <div class="fh-text">
+      <h1>Diagnóstico IA · Fundació Kālida</h1>
+      <p>Nos ayuda a diseñar una formación de 8h en Claude adaptada a tu rol y trabajo real.<br>Duración estimada: 4–6 minutos.</p>
+    </div>
+  </div>
+
+  <div class="anon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <p>Respuestas anónimas. No se recoge ningún dato personal identificativo. Los resultados se analizan en conjunto para diseñar la formación.</p>
+  </div>
+
+  <div class="pb"><div class="pf" id="pf"></div></div>
+
+  <div id="fbody">
+
+    <!-- BLOQUE 1 -->
+    <div class="blk">
+      <div class="blk-lbl">Bloque 1 — Tu contexto</div>
+      <h2>¿Desde dónde partes?</h2>
+
+      <div class="qg">
+        <span class="ql">¿En qué departamento trabajas?<span class="req">*</span></span>
+        <div class="og">
+          <button class="opt" data-g="dept" data-v="comunicacion" onclick="sel(this,'dept',false)"><span class="ck"></span>Comunicación y captación</button>
+          <button class="opt" data-g="dept" data-v="it" onclick="sel(this,'dept',false)"><span class="ck"></span>IT</button>
+          <button class="opt" data-g="dept" data-v="proyectos" onclick="sel(this,'dept',false)"><span class="ck"></span>Nuevos proyectos</button>
+          <button class="opt" data-g="dept" data-v="administracion" onclick="sel(this,'dept',false)"><span class="ck"></span>Administración</button>
+          <button class="opt" data-g="dept" data-v="rrhh" onclick="sel(this,'dept',false)"><span class="ck"></span>Recursos humanos</button>
+          <button class="opt" data-g="dept" data-v="otro" onclick="sel(this,'dept',false)"><span class="ck"></span>Otro</button>
+        </div>
+        <div class="dept-note" id="dn-comunicacion">Redacción de contenidos, memorias, newsletters, captación de donantes y patrocinadores.</div>
+        <div class="dept-note" id="dn-it">Documentación técnica, soporte interno, sistemas y comunicación con perfiles no técnicos.</div>
+        <div class="dept-note" id="dn-proyectos">Propuestas de proyecto, memorias justificativas, búsqueda de financiación y presentaciones a patronato.</div>
+        <div class="dept-note" id="dn-administracion">Gestión documental, seguimiento presupuestario y comunicaciones con proveedores y organismos.</div>
+        <div class="dept-note" id="dn-rrhh">Comunicados internos, procesos de selección, materiales de voluntariado y onboarding.</div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Cuántas horas al día dedicas a tareas repetitivas o administrativas?</span>
+        <div class="og og4">
+          <button class="opt" data-g="horas" data-v="<1" onclick="sel(this,'horas',false)"><span class="ck"></span>Menos de 1h</button>
+          <button class="opt" data-g="horas" data-v="1-2" onclick="sel(this,'horas',false)"><span class="ck"></span>1–2 horas</button>
+          <button class="opt" data-g="horas" data-v="2-4" onclick="sel(this,'horas',false)"><span class="ck"></span>2–4 horas</button>
+          <button class="opt" data-g="horas" data-v="+4" onclick="sel(this,'horas',false)"><span class="ck"></span>Más de 4h</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2 -->
+    <div class="blk">
+      <div class="blk-lbl">Bloque 2 — Uso actual de IA</div>
+      <h2>¿Qué herramientas usas y cómo?</h2>
+
+      <div class="qg">
+        <span class="ql">¿Cuál de estas herramientas usas actualmente?<span class="req">*</span></span>
+        <span class="qh">Marca todas las que apliquen.</span>
+        <div class="og">
+          <button class="opt" data-g="herramientas" data-v="claude" onclick="sel(this,'herramientas',true)"><span class="cksq"></span>Claude</button>
+          <button class="opt" data-g="herramientas" data-v="chatgpt" onclick="sel(this,'herramientas',true)"><span class="cksq"></span>ChatGPT</button>
+          <button class="opt" data-g="herramientas" data-v="gemini" onclick="sel(this,'herramientas',true)"><span class="cksq"></span>Gemini</button>
+          <button class="opt" data-g="herramientas" data-v="ninguna" onclick="sel(this,'herramientas',true)"><span class="cksq"></span>Ninguna aún</button>
+        </div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Con qué frecuencia usas alguna de ellas?</span>
+        <div class="og og2">
+          <button class="opt" data-g="frecuencia" data-v="nunca" onclick="sel(this,'frecuencia',false)"><span class="ck"></span>Nunca / casi nunca</button>
+          <button class="opt" data-g="frecuencia" data-v="puntual" onclick="sel(this,'frecuencia',false)"><span class="ck"></span>Alguna vez puntual</button>
+          <button class="opt" data-g="frecuencia" data-v="semanal" onclick="sel(this,'frecuencia',false)"><span class="ck"></span>Varias veces por semana</button>
+          <button class="opt" data-g="frecuencia" data-v="diario" onclick="sel(this,'frecuencia',false)"><span class="ck"></span>A diario</button>
+        </div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Para qué la usas habitualmente?</span>
+        <span class="qh">Marca todas las que apliquen.</span>
+        <div class="og">
+          <button class="opt" data-g="usoia" data-v="redactar" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Redactar textos</button>
+          <button class="opt" data-g="usoia" data-v="resumir" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Resumir documentos</button>
+          <button class="opt" data-g="usoia" data-v="traducir" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Traducir contenido</button>
+          <button class="opt" data-g="usoia" data-v="buscar" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Buscar información</button>
+          <button class="opt" data-g="usoia" data-v="analizar" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Analizar datos o textos</button>
+          <button class="opt" data-g="usoia" data-v="presentaciones" onclick="sel(this,'usoia',true)"><span class="cksq"></span>Preparar presentaciones</button>
+          <button class="opt" data-g="usoia" data-v="nola" onclick="sel(this,'usoia',true)"><span class="cksq"></span>No la uso aún</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 3 -->
+    <div class="blk">
+      <div class="blk-lbl">Bloque 3 — Tareas donde el tiempo se pierde</div>
+      <h2>¿Qué tareas te consumen más energía?</h2>
+      <span class="qh" style="display:block;margin-bottom:10px;">Marca hasta 4 opciones. Las opciones se adaptan a tu departamento.</span>
+
+      <div id="tareas-default" class="tareas-section show">
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="redactar-ext" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar textos extensos</button>
+          <button class="opt" data-g="tareas" data-v="adaptar-canal" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Adaptar contenido a distintos canales</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir castellano / catalán</button>
+          <button class="opt" data-g="tareas" data-v="resumir-docs" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir documentos o reuniones</button>
+          <button class="opt" data-g="tareas" data-v="presentaciones-int" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Preparar presentaciones para dirección</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Responder correos recurrentes</button>
+          <button class="opt" data-g="tareas" data-v="buscar-info" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Buscar información o benchmarks</button>
+          <button class="opt" data-g="tareas" data-v="doc-procesos" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Documentar procesos internos</button>
+        </div>
+      </div>
+
+      <div id="tareas-comunicacion" class="tareas-section">
+        <div class="ts-title">Comunicación y captación</div>
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="memorias" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar memorias anuales e informes para donantes</button>
+          <button class="opt" data-g="tareas" data-v="adaptar-canal" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Adaptar el mismo contenido a web, RRSS y newsletter</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir entre castellano y catalán</button>
+          <button class="opt" data-g="tareas" data-v="prop-patrocinadores" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Preparar propuestas para empresas colaboradoras</button>
+          <button class="opt" data-g="tareas" data-v="captacion-textos" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar textos de captación de fondos</button>
+          <button class="opt" data-g="tareas" data-v="resumir-reuniones" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir reuniones o briefings</button>
+          <button class="opt" data-g="tareas" data-v="benchmarks" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Buscar referencias de otras fundaciones</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Responder correos institucionales recurrentes</button>
+        </div>
+      </div>
+
+      <div id="tareas-it" class="tareas-section">
+        <div class="ts-title">IT</div>
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="doc-tecnica" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Documentar procesos y sistemas internos</button>
+          <button class="opt" data-g="tareas" data-v="faqs-manuales" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar FAQs o manuales de usuario</button>
+          <button class="opt" data-g="tareas" data-v="incidencias" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Comunicar incidencias a perfiles no técnicos</button>
+          <button class="opt" data-g="tareas" data-v="informes-tech" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir o analizar informes técnicos</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Responder correos de soporte recurrentes</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir entre castellano y catalán</button>
+          <button class="opt" data-g="tareas" data-v="presentaciones-int" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Preparar presentaciones para dirección</button>
+          <button class="opt" data-g="tareas" data-v="protocolos" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar protocolos o procedimientos</button>
+        </div>
+      </div>
+
+      <div id="tareas-proyectos" class="tareas-section">
+        <div class="ts-title">Nuevos proyectos</div>
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="prop-proyecto" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar propuestas de proyecto</button>
+          <button class="opt" data-g="tareas" data-v="memorias-just" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Preparar memorias justificativas</button>
+          <button class="opt" data-g="tareas" data-v="buscar-financiacion" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Buscar convocatorias o financiación</button>
+          <button class="opt" data-g="tareas" data-v="presentaciones-patronato" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Presentaciones para patronato u organismos</button>
+          <button class="opt" data-g="tareas" data-v="sintetizar-inv" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Sintetizar investigación para fundamentar proyectos</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir entre castellano y catalán</button>
+          <button class="opt" data-g="tareas" data-v="resumir-reuniones" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir reuniones o actas</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Correos formales con organismos o entidades</button>
+        </div>
+      </div>
+
+      <div id="tareas-administracion" class="tareas-section">
+        <div class="ts-title">Administración</div>
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="doc-formal" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar o revisar documentos y contratos</button>
+          <button class="opt" data-g="tareas" data-v="seguimiento-ppto" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Informes de seguimiento presupuestario</button>
+          <button class="opt" data-g="tareas" data-v="comunicaciones-ext" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Comunicaciones con proveedores u organismos</button>
+          <button class="opt" data-g="tareas" data-v="resumir-docs" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir documentos extensos</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir entre castellano y catalán</button>
+          <button class="opt" data-g="tareas" data-v="actas-reuniones" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar actas de reuniones</button>
+          <button class="opt" data-g="tareas" data-v="presentaciones-int" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Preparar informes para dirección</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Responder correos administrativos recurrentes</button>
+        </div>
+      </div>
+
+      <div id="tareas-rrhh" class="tareas-section">
+        <div class="ts-title">Recursos humanos</div>
+        <div class="og">
+          <button class="opt" data-g="tareas" data-v="ofertas-trabajo" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Redactar ofertas de trabajo o perfiles</button>
+          <button class="opt" data-g="tareas" data-v="comunicados-int" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Comunicados internos al equipo</button>
+          <button class="opt" data-g="tareas" data-v="onboarding" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Materiales de onboarding y voluntariado</button>
+          <button class="opt" data-g="tareas" data-v="evaluaciones" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Evaluaciones y feedback de desempeño</button>
+          <button class="opt" data-g="tareas" data-v="encuestas-clima" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Encuestas de clima o análisis de resultados</button>
+          <button class="opt" data-g="tareas" data-v="traducir-ca-es" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Traducir entre castellano y catalán</button>
+          <button class="opt" data-g="tareas" data-v="resumir-reuniones" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Resumir reuniones o actas</button>
+          <button class="opt" data-g="tareas" data-v="emails-rec" onclick="sel(this,'tareas',true,4)"><span class="cksq"></span>Responder correos recurrentes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 4 -->
+    <div class="blk">
+      <div class="blk-lbl">Bloque 4 — Fricciones y barreras</div>
+      <h2>¿Qué te frena?</h2>
+
+      <div class="qg">
+        <span class="ql">¿Qué te ha impedido usar IA más habitualmente?</span>
+        <span class="qh">Puedes marcar más de una.</span>
+        <div class="og">
+          <button class="opt" data-g="frenos" data-v="empezar" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No sé por dónde empezar</button>
+          <button class="opt" data-g="frenos" data-v="confianza" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No confío en los resultados que da</button>
+          <button class="opt" data-g="frenos" data-v="que-usar" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No sé qué documentos puedo usar con IA</button>
+          <button class="opt" data-g="frenos" data-v="tiempo" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No tengo tiempo para aprender a usarla bien</button>
+          <button class="opt" data-g="frenos" data-v="tono" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No me sale el tono o estilo que necesito</button>
+          <button class="opt" data-g="frenos" data-v="util" onclick="sel(this,'frenos',true)"><span class="cksq"></span>No veo claro en qué me sería útil</button>
+          <button class="opt" data-g="frenos" data-v="ya-uso" onclick="sel(this,'frenos',true)"><span class="cksq"></span>Nada me frena, ya la uso bastante</button>
+        </div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Dónde pierdes más energía o tiempo en tu trabajo?</span>
+        <span class="qh">Marca hasta 3 opciones.</span>
+        <div class="og">
+          <button class="opt" data-g="perdida" data-v="interrupciones" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Interrupciones constantes</button>
+          <button class="opt" data-g="perdida" data-v="info-dispersa" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Información dispersa o difícil de encontrar</button>
+          <button class="opt" data-g="perdida" data-v="doble-trabajo" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Hacer lo mismo en formatos distintos</button>
+          <button class="opt" data-g="perdida" data-v="urgencias" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Urgencias de última hora</button>
+          <button class="opt" data-g="perdida" data-v="siempre-asi" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Tareas que «siempre se han hecho así»</button>
+          <button class="opt" data-g="perdida" data-v="revisiones" onclick="sel(this,'perdida',true,3)"><span class="cksq"></span>Revisiones y correcciones repetidas</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 5 -->
+    <div class="blk">
+      <div class="blk-lbl">Bloque 5 — Potencial y aprendizaje</div>
+      <h2>¿Qué quieres conseguir?</h2>
+
+      <div class="qg">
+        <span class="ql">Si pudieras ahorrar tiempo en una sola tarea esta semana con IA, ¿cuál sería?</span>
+        <textarea id="t-ahorro" placeholder="Describe brevemente la tarea que más tiempo te consume..."></textarea>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Hay alguna tarea de tu trabajo que crees que una IA nunca podría hacer bien?</span>
+        <span class="qh">Opcional — pero muy útil para diseñar la formación.</span>
+        <textarea id="t-imposible" placeholder="¿Qué tarea crees que es exclusivamente humana?"></textarea>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Cómo aprendes mejor?</span>
+        <div class="og og2">
+          <button class="opt" data-g="aprendizaje" data-v="demo-practica" onclick="sel(this,'aprendizaje',false)"><span class="ck"></span>Viendo una demo y luego practicando</button>
+          <button class="opt" data-g="aprendizaje" data-v="mis-materiales" onclick="sel(this,'aprendizaje',false)"><span class="ck"></span>Probando con mis propios documentos</button>
+          <button class="opt" data-g="aprendizaje" data-v="teoria-primero" onclick="sel(this,'aprendizaje',false)"><span class="ck"></span>Entendiendo la teoría primero</button>
+          <button class="opt" data-g="aprendizaje" data-v="indiferente" onclick="sel(this,'aprendizaje',false)"><span class="ck"></span>Me adapto a cualquier formato</button>
+        </div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Tienes algún documento real que te gustaría trabajar durante la formación?</span>
+        <div class="og">
+          <button class="opt" data-g="doc-real" data-v="si" onclick="sel(this,'doc-real',false)"><span class="ck"></span>Sí, puedo traerlo</button>
+          <button class="opt" data-g="doc-real" data-v="genericos" onclick="sel(this,'doc-real',false)"><span class="ck"></span>Prefiero ejemplos genéricos</button>
+          <button class="opt" data-g="doc-real" data-v="no-se" onclick="sel(this,'doc-real',false)"><span class="ck"></span>No lo sé aún</button>
+        </div>
+      </div>
+
+      <div class="dvd"></div>
+
+      <div class="qg">
+        <span class="ql">¿Cuántas horas a la semana crees que podrías ahorrar si algunas tareas se simplificaran con IA?</span>
+        <div class="og og4">
+          <button class="opt" data-g="ahorro" data-v="1-2" onclick="sel(this,'ahorro',false)"><span class="ck"></span>1–2 horas</button>
+          <button class="opt" data-g="ahorro" data-v="3-5" onclick="sel(this,'ahorro',false)"><span class="ck"></span>3–5 horas</button>
+          <button class="opt" data-g="ahorro" data-v="6-10" onclick="sel(this,'ahorro',false)"><span class="ck"></span>6–10 horas</button>
+          <button class="opt" data-g="ahorro" data-v="+10" onclick="sel(this,'ahorro',false)"><span class="ck"></span>Más de 10h</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="sbtn" id="sbtn" onclick="enviar()">
+      &#10148; Enviar diagnóstico
+    </button>
+    <p class="footer-note">Respuesta anónima · nextstepia.com</p>
+
+  </div>
+
+  <div class="succ" id="succ">
+    <div class="ic-circle">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h2>¡Diagnóstico recibido!</h2>
+    <p>Gracias por tu tiempo. Tus respuestas nos ayudarán a diseñar una formación que encaje exactamente con tu trabajo real en Kālida.<br><br>Nos vemos en la sesión.</p>
+    <p style="margin-top:1.5rem;font-size:12px;color:#aaa;">nextstepia.com · info@nextstepia.com</p>
+  </div>
+
+</div>
+
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbz6eMkzeWpOgSnUT_aO4OPqjjnHNwnHS1S7OO-iH8fst_54KEzk6ekgrlYUs4HSg27kUA/exec';
+const st = {};
+const deptTareas = {
+  comunicacion:'tareas-comunicacion',
+  it:'tareas-it',
+  proyectos:'tareas-proyectos',
+  administracion:'tareas-administracion',
+  rrhh:'tareas-rrhh'
+};
+
+function sel(el, g, multi, max) {
+  const siblings = document.querySelectorAll('.opt[data-g="'+g+'"]');
+  if (!multi) {
+    siblings.forEach(s => s.classList.remove('sel'));
+    el.classList.add('sel');
+    st[g] = el.dataset.v;
+    if (g === 'dept') switchDept(el.dataset.v);
+  } else {
+    const already = document.querySelectorAll('.opt[data-g="'+g+'"].sel');
+    if (!el.classList.contains('sel') && max && already.length >= max) return;
+    el.classList.toggle('sel');
+    st[g] = [...document.querySelectorAll('.opt[data-g="'+g+'"].sel')].map(s => s.dataset.v).join(', ');
+  }
+  updateProg();
+}
+
+function switchDept(v) {
+  document.querySelectorAll('.dept-note').forEach(n => n.classList.remove('show'));
+  document.querySelectorAll('.tareas-section').forEach(s => s.classList.remove('show'));
+  document.querySelectorAll('.opt[data-g="tareas"]').forEach(o => o.classList.remove('sel'));
+  st['tareas'] = '';
+  const note = document.getElementById('dn-' + v);
+  if (note) note.classList.add('show');
+  const ts = deptTareas[v];
+  if (ts) { document.getElementById(ts).classList.add('show'); }
+  else { document.getElementById('tareas-default').classList.add('show'); }
+}
+
+function updateProg() {
+  const keys = ['dept','horas','herramientas','frecuencia','usoia','tareas','frenos','perdida','aprendizaje','ahorro'];
+  const filled = keys.filter(k => st[k] && st[k].length > 0).length;
+  document.getElementById('pf').style.width = Math.min(100, Math.round(filled / keys.length * 100)) + '%';
+}
+
+async function enviar() {
+  if (!st['dept'] || !st['herramientas']) {
+    alert('Por favor, indica tu departamento y las herramientas que usas.');
+    return;
+  }
+  const btn = document.getElementById('sbtn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  const payload = {
+    timestamp: new Date().toISOString(),
+    departamento: st['dept'] || '',
+    horas_admin: st['horas'] || '',
+    herramientas: st['herramientas'] || '',
+    frecuencia: st['frecuencia'] || '',
+    uso_ia: st['usoia'] || '',
+    tareas_repetitivas: st['tareas'] || '',
+    frenos: st['frenos'] || '',
+    perdida_energia: st['perdida'] || '',
+    tarea_ahorro: document.getElementById('t-ahorro').value || '',
+    tarea_imposible: document.getElementById('t-imposible').value || '',
+    estilo_aprendizaje: st['aprendizaje'] || '',
+    doc_real: st['doc-real'] || '',
+    ahorro_estimado: st['ahorro'] || ''
+  };
+  try {
+    await fetch(SHEET_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {}
+  document.getElementById('fbody').style.display = 'none';
+  document.getElementById('succ').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+updateProg();
+</script>
+</body>
+</html>
